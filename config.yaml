@@ -1,0 +1,9 @@
+pdfFile: "./Выписка.pdf"
+csvFile: "./statement.csv"
+categories:
+  - name: "Компьютер"
+    commentPart: ["DNS", "CompShop"]
+  - name: "Кондитерка"
+    commentPart: ["LAKOMKA", "SERGEYS", "SKY CINEMA BAR"]
+  - name: "Кино"
+    commentPart: ["SKY CINEMA KINOTEATR", "7Kino"]
