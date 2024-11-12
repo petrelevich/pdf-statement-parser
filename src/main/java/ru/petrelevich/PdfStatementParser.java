@@ -11,6 +11,7 @@ import ru.petrelevich.loader.StatementLoaderFile;
 import ru.petrelevich.parser.Categorizer;
 import ru.petrelevich.parser.PdfToText;
 import ru.petrelevich.parser.StatementComposer;
+import ru.petrelevich.parser.SumParser;
 
 
 public class PdfStatementParser {
@@ -25,7 +26,8 @@ public class PdfStatementParser {
 
         var pdfToText = new PdfToText();
         var statementLoader = new StatementLoaderFile(config.pdfFile());
-        var statementComposer = new StatementComposer(categorizer);
+        var sumParser = new SumParser();
+        var statementComposer = new StatementComposer(categorizer, sumParser);
         var statementExporterCsv = new StatementExporterCsv(config.csvFile());
 
         var content = statementLoader.getContent();

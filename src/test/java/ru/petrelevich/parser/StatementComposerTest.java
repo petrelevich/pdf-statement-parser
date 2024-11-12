@@ -23,7 +23,7 @@ class StatementComposerTest {
         categories.add(new CategoryPattern("Кино", List.of("SKY CINEMA KINOTEATR", "7Kino")));
         var categorizer = new Categorizer(categories);
 
-        var statementComposer = new StatementComposer(categorizer);
+        var statementComposer = new StatementComposer(categorizer, new SumParser());
 
         //when
         var statement = statementComposer.compose(getParts());

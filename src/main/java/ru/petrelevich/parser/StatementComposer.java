@@ -16,11 +16,13 @@ public class StatementComposer {
     private static final Logger log = LoggerFactory.getLogger(StatementComposer.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
+    private static final BigDecimal ZERO = new BigDecimal("0.00");
     private final Categorizer categorizer;
+    private final SumParser sumParser;
 
-    public StatementComposer(Categorizer categorizer) {
+    public StatementComposer(Categorizer categorizer, SumParser sumParser) {
         this.categorizer = categorizer;
+        this.sumParser = sumParser;
     }
 
     public Statement compose(List<String> statementParts) {
@@ -36,27 +38,37 @@ public class StatementComposer {
                 currentIdx = idx;
                 var eIdx = idx;
                 String comment;
-                if (isNextTime(statementParts, idx)) {
-                    comment = String.format("%s %s", statementParts.get(eIdx + 7), statementParts.get(eIdx + 8));
-                    idx += 9;
+                if (isDateTime(statementParts, idx)) {
+                    if (isNextTime(statementParts, idx)) {
+                        comment = String.format("%s %s", statementParts.get(eIdx + 7), statementParts.get(eIdx + 8));
+                    } else {
+                        comment = String.format("%s %s %s", statementParts.get(eIdx + 1), statementParts.get(eIdx + 8), statementParts.get(eIdx + 9));
+                        eIdx++;
+                    }
+                    var dateOperationStr = String.format("%s %s", statementParts.get(currentIdx), statementParts.get(eIdx + 1));
+                    var dateProcessingStr = statementParts.get(eIdx + 2);
+                    var income = sumParser.parse(statementParts.get(eIdx + 4));
+                    var fee = sumParser.parse(statementParts.get(eIdx + 6));
+                    if (income.equals(ZERO) && !fee.equals(ZERO) && comment.contains("Зачисление кешбэка по программе лояльности")) {
+                        income = fee;
+                    }
+                    var entry = AccountEntry.builder()
+                            .dateOperation(LocalDateTime.parse(dateOperationStr, DATE_TIME_FORMATTER))
+                            .dateProcessing(LocalDate.parse(dateProcessingStr, DATE_FORMATTER))
+                            .sumOperationCurrency(sumParser.parse(statementParts.get(eIdx + 3)))
+                            .sumIncome(income)
+                            .sumOutcome(sumParser.parse(statementParts.get(eIdx + 5)))
+                            .sumFee(fee)
+                            .comment(comment)
+                            .category(categorizer.getCategory(comment))
+                            .build();
+                    totalIncome = totalIncome.add(entry.sumIncome());
+                    totalOutcome = totalOutcome.add(entry.sumOutcome());
+                    entries.add(entry);
+                    idx += 8;
                 } else {
-                    comment = String.format("%s %s %s", statementParts.get(eIdx + 1), statementParts.get(eIdx + 8), statementParts.get(eIdx + 9));
-                    eIdx++;
-                    idx += 10;
+                    idx++;
                 }
-                var entry = AccountEntry.builder()
-                        .dateOperation(LocalDateTime.parse(String.format("%s %s", statementParts.get(currentIdx), statementParts.get(eIdx + 1)), DATE_TIME_FORMATTER))
-                        .dateProcessing(LocalDate.parse(statementParts.get(eIdx + 2), DATE_FORMATTER))
-                        .sumOperationCurrency(parseSum(statementParts.get(eIdx + 3)))
-                        .sumIncome(parseSum(statementParts.get(eIdx + 4)))
-                        .sumOutcome(parseSum(statementParts.get(eIdx + 5)))
-                        .sumFee(parseSum(statementParts.get(eIdx + 6)))
-                        .comment(comment)
-                        .category(categorizer.getCategory(comment))
-                        .build();
-                totalIncome = totalIncome.add(entry.sumIncome());
-                totalOutcome = totalOutcome.add(entry.sumOutcome());
-                entries.add(entry);
             }
         } catch (Exception ex) {
             throw new ParserException("parsing error, current idx:" + currentIdx, ex);
@@ -69,10 +81,10 @@ public class StatementComposer {
                 .from(LocalDate.parse(period[0], DATE_FORMATTER))
                 .to(LocalDate.parse(period[1], DATE_FORMATTER))
 
-                .balanceInitial(parseSum(statementParts.get(9)))
-                .balanceFinal(parseSum(statementParts.get(13)))
-                .totalIncome(parseSum(statementParts.get(11)))
-                .totalOutcome(parseSum(statementParts.get(15)))
+                .balanceInitial(sumParser.parse(statementParts.get(9)))
+                .balanceFinal(sumParser.parse(statementParts.get(13)))
+                .totalIncome(sumParser.parse(statementParts.get(11)))
+                .totalOutcome(sumParser.parse(statementParts.get(15)))
                 .entries(entries)
                 .build();
 
@@ -102,11 +114,13 @@ public class StatementComposer {
         }
     }
 
-    private BigDecimal parseSum(String sumStr) {
-        return new BigDecimal(sumStr
-                .replace("RUB", "")
-                .replace(" ", "")
-                .replace(",", ".")
-        );
+    private boolean isDateTime(List<String> statementParts, int idx) {
+        try {
+            LocalDate.parse(statementParts.get(idx), DATE_FORMATTER);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
+
 }

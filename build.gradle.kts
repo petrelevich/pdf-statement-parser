@@ -28,7 +28,7 @@ dependencyManagement {
         imports {
             mavenBom("org.springframework.boot:spring-boot-dependencies:3.2.5")
             mavenBom("com.fasterxml.jackson:jackson-bom:2.18.0")
-          }
+        }
     }
 }
 
@@ -44,18 +44,20 @@ dependencies {
 
     annotationProcessor("org.projectlombok:lombok")
 
-    testImplementation ("org.junit.jupiter:junit-jupiter-api")
-    testImplementation ("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation ("org.assertj:assertj-core")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.assertj:assertj-core")
 }
 
 configurations.all {
     resolutionStrategy {
         failOnVersionConflict()
 
+        force("com.google.code.findbugs:jsr305:3.0.2")
+        force("org.sonarsource.sslr:sslr-core:1.24.0.633")
+
 //        force("org.sonarsource.analyzer-commons:sonar-analyzer-commons:2.4.0.1317")
-//        force("com.google.code.findbugs:jsr305:3.0.2")
-//        force("org.sonarsource.sslr:sslr-core:1.24.0.633")
 //        force("org.eclipse.platform:org.eclipse.osgi:3.18.300")
     }
 }
