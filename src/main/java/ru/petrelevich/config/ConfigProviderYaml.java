@@ -1,7 +1,6 @@
 package ru.petrelevich.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
 
 public class ConfigProviderYaml implements ConfigProvider {

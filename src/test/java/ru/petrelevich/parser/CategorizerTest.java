@@ -1,20 +1,18 @@
 package ru.petrelevich.parser;
 
-import org.junit.jupiter.api.Test;
-import ru.petrelevich.model.CategoryPattern;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.petrelevich.parser.Categorizer.CATEGORY_EMPTY;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import ru.petrelevich.model.CategoryPattern;
 
 class CategorizerTest {
 
     @Test
     void getCategory() {
-        //given
+        // given
         var categories = new ArrayList<CategoryPattern>();
 
         var catComputer = new CategoryPattern("компьютер", List.of("DNS", "citylink"));
@@ -23,20 +21,20 @@ class CategorizerTest {
         categories.add(catFood);
 
         var categorizer = new Categorizer(categories);
-        
-        //when
+
+        // when
         var cat1 = categorizer.getCategory("неизвестно что");
-        //then
+        // then
         assertThat(cat1).isEqualTo(CATEGORY_EMPTY);
 
-        //when
+        // when
         var cat2 = categorizer.getCategory("покупка в dns");
-        //then
+        // then
         assertThat(cat2).isEqualTo(catComputer.name());
 
-        //when
+        // when
         var cat3 = categorizer.getCategory("куплены ПятеРочка продукты");
-        //then
+        // then
         assertThat(cat3).isEqualTo(catFood.name());
     }
 }

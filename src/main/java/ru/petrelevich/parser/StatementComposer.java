@@ -1,21 +1,21 @@
 package ru.petrelevich.parser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.petrelevich.model.AccountEntry;
-import ru.petrelevich.model.Statement;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.petrelevich.model.AccountEntry;
+import ru.petrelevich.model.Statement;
 
 public class StatementComposer {
     private static final Logger log = LoggerFactory.getLogger(StatementComposer.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final String MSG_PATTERN = "%s %s";
     private static final BigDecimal ZERO = new BigDecimal("0.00");
     private final Categorizer categorizer;
     private final SumParser sumParser;
@@ -40,16 +40,24 @@ public class StatementComposer {
                 String comment;
                 if (isDateTime(statementParts, idx)) {
                     if (isNextTime(statementParts, idx)) {
-                        comment = String.format("%s %s", statementParts.get(eIdx + 7), statementParts.get(eIdx + 8));
+                        comment =
+                                String.format(MSG_PATTERN, statementParts.get(eIdx + 7), statementParts.get(eIdx + 8));
                     } else {
-                        comment = String.format("%s %s %s", statementParts.get(eIdx + 1), statementParts.get(eIdx + 8), statementParts.get(eIdx + 9));
+                        comment = String.format(
+                                "%s %s %s",
+                                statementParts.get(eIdx + 1),
+                                statementParts.get(eIdx + 8),
+                                statementParts.get(eIdx + 9));
                         eIdx++;
                     }
-                    var dateOperationStr = String.format("%s %s", statementParts.get(currentIdx), statementParts.get(eIdx + 1));
+                    var dateOperationStr =
+                            String.format(MSG_PATTERN, statementParts.get(currentIdx), statementParts.get(eIdx + 1));
                     var dateProcessingStr = statementParts.get(eIdx + 2);
                     var income = sumParser.parse(statementParts.get(eIdx + 4));
                     var fee = sumParser.parse(statementParts.get(eIdx + 6));
-                    if (income.equals(ZERO) && !fee.equals(ZERO) && comment.contains("Зачисление кешбэка по программе лояльности")) {
+                    if (income.equals(ZERO)
+                            && !fee.equals(ZERO)
+                            && comment.contains("Зачисление кешбэка по программе лояльности")) {
                         income = fee;
                     }
                     var entry = AccountEntry.builder()
@@ -77,10 +85,8 @@ public class StatementComposer {
                 .fio(statementParts.get(0))
                 .contract(statementParts.get(2))
                 .account(statementParts.get(4))
-
                 .from(LocalDate.parse(period[0], DATE_FORMATTER))
                 .to(LocalDate.parse(period[1], DATE_FORMATTER))
-
                 .balanceInitial(sumParser.parse(statementParts.get(9)))
                 .balanceFinal(sumParser.parse(statementParts.get(13)))
                 .totalIncome(sumParser.parse(statementParts.get(11)))
@@ -107,7 +113,9 @@ public class StatementComposer {
 
     private boolean isNextTime(List<String> statementParts, int idx) {
         try {
-            LocalDateTime.parse(String.format("%s %s", statementParts.get(idx), statementParts.get(idx + 1)), DATE_TIME_FORMATTER);
+            LocalDateTime.parse(
+                    String.format(MSG_PATTERN, statementParts.get(idx), statementParts.get(idx + 1)),
+                    DATE_TIME_FORMATTER);
             return true;
         } catch (Exception ex) {
             return false;
@@ -122,5 +130,4 @@ public class StatementComposer {
             return false;
         }
     }
-
 }

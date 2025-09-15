@@ -7,12 +7,10 @@ import org.slf4j.LoggerFactory;
 import ru.petrelevich.config.ConfigProviderYaml;
 import ru.petrelevich.exporter.StatementExporterCsv;
 import ru.petrelevich.loader.StatementLoaderFile;
-
 import ru.petrelevich.parser.Categorizer;
 import ru.petrelevich.parser.PdfToText;
 import ru.petrelevich.parser.StatementComposer;
 import ru.petrelevich.parser.SumParser;
-
 
 public class PdfStatementParser {
     private static final Logger log = LoggerFactory.getLogger(PdfStatementParser.class);

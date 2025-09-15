@@ -1,14 +1,14 @@
 package ru.petrelevich.exporter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.petrelevich.model.Statement;
+import static java.nio.file.StandardOpenOption.APPEND;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import static java.nio.file.StandardOpenOption.APPEND;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.petrelevich.model.Statement;
 
 public class StatementExporterCsv implements StatementExporter {
     private static final Logger log = LoggerFactory.getLogger(StatementExporterCsv.class);
@@ -22,38 +22,39 @@ public class StatementExporterCsv implements StatementExporter {
 
     @Override
     public void export(Statement statement) {
-        var header = "Дата и время операции" +
-                ";" +
-                "Дата обработки банком" +
-                ";" +
-                "Сумма операции в валюте операции" +
-                ";" +
-                "Сумма в валюте счета, приход" +
-                ";" +
-                "Сумма в валюте счета, расход" +
-                ";" +
-                "Комиссия" +
-                ";" +
-                "Категория" +
-                ";" +
-                "Описание операции";
+        var header = "Дата и время операции"
+                + ";"
+                + "Дата обработки банком"
+                + ";"
+                + "Сумма операции в валюте операции"
+                + ";"
+                + "Сумма в валюте счета, приход"
+                + ";"
+                + "Сумма в валюте счета, расход"
+                + ";"
+                + "Комиссия"
+                + ";"
+                + "Категория"
+                + ";"
+                + "Описание операции";
 
-        var entryLines = statement.entries().stream().map(entry ->
-                DATE_TIME_FORMATTER.format(entry.dateOperation()) +
-                        ";" +
-                        DATE_FORMATTER.format(entry.dateProcessing()) +
-                        ";" +
-                        entry.sumOperationCurrency() +
-                        ";" +
-                        entry.sumIncome() +
-                        ";" +
-                        entry.sumOutcome() +
-                        ";" +
-                        entry.sumFee() +
-                        ";" +
-                        entry.category() +
-                        ";" +
-                        entry.comment()).toList();
+        var entryLines = statement.entries().stream()
+                .map(entry -> DATE_TIME_FORMATTER.format(entry.dateOperation())
+                        + ";"
+                        + DATE_FORMATTER.format(entry.dateProcessing())
+                        + ";"
+                        + entry.sumOperationCurrency()
+                        + ";"
+                        + entry.sumIncome()
+                        + ";"
+                        + entry.sumOutcome()
+                        + ";"
+                        + entry.sumFee()
+                        + ";"
+                        + entry.category()
+                        + ";"
+                        + entry.comment())
+                .toList();
 
         try {
             Files.write(Paths.get(fileName), List.of(header));

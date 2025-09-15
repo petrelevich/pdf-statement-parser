@@ -1,22 +1,21 @@
 package ru.petrelevich.parser;
 
-import org.junit.jupiter.api.Test;
-import ru.petrelevich.model.CategoryPattern;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import ru.petrelevich.model.CategoryPattern;
 
 class StatementComposerTest {
 
     @Test
+    @SuppressWarnings("java:S5961")
     void compose() {
-        //given
+        // given
         var categories = new ArrayList<CategoryPattern>();
         categories.add(new CategoryPattern("Компьютер", List.of("DNS")));
         categories.add(new CategoryPattern("Кондитерка", List.of("LAKOMKA", "SERGEYS", "SKY CINEMA BAR")));
@@ -25,10 +24,10 @@ class StatementComposerTest {
 
         var statementComposer = new StatementComposer(categorizer, new SumParser());
 
-        //when
+        // when
         var statement = statementComposer.compose(getParts());
 
-        //then
+        // then
         assertThat(statement.fio()).isEqualTo("Васильев Петр Иванович");
         assertThat(statement.contract()).isEqualTo("00000-P-12112126");
         assertThat(statement.account()).isEqualTo("40817121617111002702");
@@ -48,7 +47,8 @@ class StatementComposerTest {
         assertThat(entry.sumOutcome()).isEqualTo(new BigDecimal("199.00"));
         assertThat(entry.sumFee()).isEqualTo(new BigDecimal("0.00"));
         assertThat(entry.category()).isEqualTo("Компьютер");
-        assertThat(entry.comment()).isEqualTo("Оплата товаров и услуг. DNS 1058. РФ. MAGNITOGORSK . 861000004126 по карте *1021");
+        assertThat(entry.comment())
+                .isEqualTo("Оплата товаров и услуг. DNS 1058. РФ. MAGNITOGORSK . 861000004126 по карте *1021");
 
         entry = statement.entries().get(1);
         assertThat(entry.dateOperation()).isEqualTo(LocalDateTime.of(2024, 7, 31, 9, 53, 46));
@@ -58,7 +58,8 @@ class StatementComposerTest {
         assertThat(entry.sumOutcome()).isEqualTo(new BigDecimal("185.00"));
         assertThat(entry.sumFee()).isEqualTo(new BigDecimal("0.00"));
         assertThat(entry.category()).isEqualTo("Кондитерка");
-        assertThat(entry.comment()).isEqualTo("Оплата товаров и услуг. LAKOMKA. РФ. Magnitogorsk . POS0013794 по карте *1021");
+        assertThat(entry.comment())
+                .isEqualTo("Оплата товаров и услуг. LAKOMKA. РФ. Magnitogorsk . POS0013794 по карте *1021");
 
         entry = statement.entries().get(2);
         assertThat(entry.dateOperation()).isEqualTo(LocalDateTime.of(2024, 7, 28, 21, 58, 17));
@@ -68,7 +69,8 @@ class StatementComposerTest {
         assertThat(entry.sumOutcome()).isEqualTo(new BigDecimal("95.00"));
         assertThat(entry.sumFee()).isEqualTo(new BigDecimal("0.00"));
         assertThat(entry.category()).isEqualTo("Кондитерка");
-        assertThat(entry.comment()).isEqualTo("Оплата товаров и услуг. SERGEYS. РФ. MAGNITOGORSK . 860000018292 по карте *1021");
+        assertThat(entry.comment())
+                .isEqualTo("Оплата товаров и услуг. SERGEYS. РФ. MAGNITOGORSK . 860000018292 по карте *1021");
 
         entry = statement.entries().get(3);
         assertThat(entry.dateOperation()).isEqualTo(LocalDateTime.of(2024, 7, 28, 21, 50, 13));
@@ -78,7 +80,8 @@ class StatementComposerTest {
         assertThat(entry.sumOutcome()).isEqualTo(new BigDecimal("230.00"));
         assertThat(entry.sumFee()).isEqualTo(new BigDecimal("0.00"));
         assertThat(entry.category()).isEqualTo("Кондитерка");
-        assertThat(entry.comment()).isEqualTo("Оплата товаров и услуг. SKY CINEMA BAR. РФ. MAGNITOGORSK . 720000010974 по карте *1021");
+        assertThat(entry.comment())
+                .isEqualTo("Оплата товаров и услуг. SKY CINEMA BAR. РФ. MAGNITOGORSK . 720000010974 по карте *1021");
 
         entry = statement.entries().get(4);
         assertThat(entry.dateOperation()).isEqualTo(LocalDateTime.of(2024, 7, 28, 21, 49, 14));
@@ -88,7 +91,9 @@ class StatementComposerTest {
         assertThat(entry.sumOutcome()).isEqualTo(new BigDecimal("800.00"));
         assertThat(entry.sumFee()).isEqualTo(new BigDecimal("0.00"));
         assertThat(entry.category()).isEqualTo("Кино");
-        assertThat(entry.comment()).isEqualTo("Оплата товаров и услуг. SKY CINEMA KINOTEATR. РФ. MAGNITOGORSK . 720000010973 по карте *1021");
+        assertThat(entry.comment())
+                .isEqualTo(
+                        "Оплата товаров и услуг. SKY CINEMA KINOTEATR. РФ. MAGNITOGORSK . 720000010973 по карте *1021");
     }
 
     private List<String> getParts() {

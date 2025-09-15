@@ -4,7 +4,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class StatementLoaderResource implements StatementLoader{
+public class StatementLoaderResource implements StatementLoader {
     @Override
     public byte[] getContent() {
         var filePath = "/test-data/testStatement.pdf";

@@ -1,12 +1,11 @@
 package ru.petrelevich.model;
 
-import lombok.Builder;
-import lombok.Value;
-import lombok.experimental.Accessors;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.Value;
+import lombok.experimental.Accessors;
 
 @Value
 @Builder

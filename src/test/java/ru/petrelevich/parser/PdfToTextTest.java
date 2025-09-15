@@ -1,26 +1,24 @@
 package ru.petrelevich.parser;
 
-
-import org.junit.jupiter.api.Test;
-import ru.petrelevich.loader.StatementLoaderResource;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import ru.petrelevich.loader.StatementLoaderResource;
 
 class PdfToTextTest {
 
     @Test
     void getTextPartsTest() {
-        //given
+        // given
         var pdfToText = new PdfToText();
         var statementLoader = new StatementLoaderResource();
 
-        //when
+        // when
         var textParts = pdfToText.getTextParts(statementLoader.getContent());
 
-        //then
+        // then
         assertThat(textParts).isEqualTo(getExpectedParts());
     }
 

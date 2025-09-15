@@ -1,8 +1,6 @@
 package ru.petrelevich.config;
 
+import java.util.List;
 import ru.petrelevich.model.CategoryPattern;
 
-import java.util.List;
-
-public record Config(String pdfFile, String csvFile, List<CategoryPattern> categories) {
-}
+public record Config(String pdfFile, String csvFile, List<CategoryPattern> categories) {}
