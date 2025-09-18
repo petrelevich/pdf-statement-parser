@@ -23,14 +23,14 @@ repositories {
 
 val lombok = "1.18.36"
 val spotbugs = "4.8.6"
-val pdfboxTools = "3.0.3"
+val pdfboxTools = "3.0.5"
 
 apply(plugin = "io.spring.dependency-management")
 dependencyManagement {
     dependencies {
         imports {
             mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.5")
-            mavenBom("com.fasterxml.jackson:jackson-bom:2.18.0")
+            mavenBom("com.fasterxml.jackson:jackson-bom:2.20.0")
         }
     }
 }
